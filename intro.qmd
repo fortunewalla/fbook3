@@ -4,4 +4,87 @@ This is a book created from markdown and executable code.
 
 GH Actions is working but now need to create a preview local & then upload it fully there.
 
+0) https://www.youtube.com/watch?v=arzBRW5XIkg
+
+1) Create `fbook` book project in quarto
+2) No need to render it locally. Perhaps only preview.
+3) `git init` & add required token, `user.name` & `user.email`
+4) Create repo on GH `fbook`
+5) Type this: 
+```
+git remote add origin https://github.com/fortunewalla/fbook.git
+git branch -M main
+
+```
+6) git add . && git commmit -m "initial" & git push -u origin main
+
+7) git add . && git commmit -m "initial" & git push --set-upstream origin main
+
+8) Create `gh-pages` branch in GH repo.
+
+9) mkdir & create file .github/workflows/publish-quarto.yml
+
+10) GH Actions File. Don't copy the file from GH Actions Samples Example repo. It has some YAML error.
+The below works.
+
+```yaml
+on:
+  workflow_dispatch:
+  push:
+    branches: main
+
+name: Quarto Publish
+
+jobs:
+  build-deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Quarto
+        uses: quarto-dev/quarto-actions/setup@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tinytex: true        
+      # From https://github.com/actions/setup-python
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+          cache: 'pip'
+      - run: pip install jupyter
+      - run: pip install -r requirements.txt
+	  
+      # From https://github.com/r-lib/actions/tree/v2-branch/setup-r
+      - name: Setup R
+        uses: r-lib/actions/setup-r@v2
+        with:
+          r-version: '4.4.0'
+
+      - name: Install R Dependencies
+        uses: r-lib/actions/setup-renv@v2
+        with:
+          cache-version: 1
+	  - name: Render and Publish
+        uses: quarto-dev/quarto-actions/publish@v2
+        with:
+          target: gh-pages
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+```
+
+11) git add . && git commmit -m "added publish-quarto.yml" & git push -u origin main
+
+12) GH Settings -> Pages -> Branch change to `gh-pages` & directory as `/root` and then save.
+
+
+
+
+
+
 See @knuth84 for additional discussion of literate programming.
