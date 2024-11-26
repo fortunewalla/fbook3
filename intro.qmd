@@ -82,7 +82,7 @@ jobs:
 
 12) GH Settings -> Pages -> Branch change to `gh-pages` & directory as `/root` and then save.
 
-
+13) It will start building & deploying to `gh-pages`
 
 
 
