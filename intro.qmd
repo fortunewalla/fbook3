@@ -40,7 +40,6 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write
-	  pages: write
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
@@ -50,34 +49,77 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tinytex: true        
-      # From https://github.com/actions/setup-python
-      - name: Setup Python
+          tinytex: true
+          
+      - name: Install Python and Dependencies
         uses: actions/setup-python@v5
         with:
           python-version: '3.10'
           cache: 'pip'
       - run: pip install jupyter
       - run: pip install -r requirements.txt
-	  
-      # From https://github.com/r-lib/actions/tree/v2-branch/setup-r
-      - name: Setup R
+
+      - name: Install R
         uses: r-lib/actions/setup-r@v2
         with:
-          r-version: '4.4.0'
+          r-version: '4.4.1'
 
       - name: Install R Dependencies
         uses: r-lib/actions/setup-renv@v2
         with:
           cache-version: 1
-	  - name: Render and Publish
+
+      - name: Render and Publish
         uses: quarto-dev/quarto-actions/publish@v2
         with:
           target: gh-pages
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+		  
+```
+10) Add requirments.txt file in root with `matplotlib`
+
+11) Add `renv.lock` file in root.
+
+```xml
+{
+  "R": {
+    "Version": "4.4.1",
+    "Repositories": [
+      {
+        "Name": "CRAN",
+        "URL": "https://cloud.r-project.org"
+      }
+    ]
+  },
+  "Packages": {
+    "markdown": {
+      "Package": "markdown",
+      "Version": "1.0",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "4584a57f565dd7987d59dda3a02cfb41"
+    },
+    "mime": {
+      "Package": "mime",
+      "Version": "0.12.1",
+      "Source": "GitHub",
+      "RemoteType": "github",
+      "RemoteHost": "api.github.com",
+      "RemoteUsername": "yihui",
+      "RemoteRepo": "mime",
+      "RemoteRef": "main",
+      "RemoteSha": "1763e0dcb72fb58d97bab97bb834fc71f1e012bc",
+      "Requirements": [
+        "tools"
+      ],
+      "Hash": "c2772b6269924dad6784aaa1d99dbb86"
+    }
+  }
+}
 
 ```
+11.1) Fill up the `requirements.txt` & `renv.lock` based on your needs. The above are put just to make the workflow finish up.
 
 11) git add . && git commmit -m "added publish-quarto.yml" & git push -u origin main
 
